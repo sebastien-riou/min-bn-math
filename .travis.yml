@@ -1,0 +1,38 @@
+# travis.yml
+
+os:
+  - linux
+#  - osx
+
+compiler:
+  - gcc
+#  - clang
+
+matrix:
+  exclude:
+      - os: osx
+        compiler: gcc
+
+sudo: false
+language: cpp
+
+install:
+- if [ "$CXX" = "g++" ]; then export CXX="g++-5.4" CC="gcc-5.4"; fi
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-5.4
+    - g++-5.4
+    - clang
+
+script:
+  - gcc --version
+  - ls -l
+  - gcc -std=c11 min-bn-math-test.c
+  - ls -l
+  - ./a.out
+  - gcc -std=c11 min-bn-math-rsa-test.c
+  - ls -l
+  - ./a.out
