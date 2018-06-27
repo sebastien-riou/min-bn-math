@@ -16,7 +16,7 @@
 	#include <stdlib.h>
 	#define BN_SAFE_WIDTH 56
 	typedef uint8_t WORD;
-	
+
 	//generic helpers used in test functions
 	#define NUM(a) (sizeof(a) / sizeof(*a))
 	#define STR_EXPAND(tok) #tok
@@ -24,7 +24,16 @@
 	#define DBG_PRINT32(a) printf("%s = %08X\n",STR(a),a);
 	#define DBG_PRINT64(a) printf("%s = %016" PRIX64 "\n",STR(a),a);
 
-	#define ASSERT_EQ64(actual,expected) do{\
+	#define ASSERT_EQ(actual,expected) do{\
+		if((actual)!=(expected)){\
+			printf("%s != %s\n",STR(actual),STR(expected));\
+			printf("actual value is   0x%08X\n",actual);\
+			printf("expected value is 0x%08X\n",expected);\
+			exit(-1);\
+		}\
+	}while(0)
+
+    #define ASSERT_EQ64(actual,expected) do{\
 		if((actual)!=(expected)){\
 			printf("%s != %s\n",STR(actual),STR(expected));\
 			printf("actual value is   0x%016" PRIX64 "\n",actual);\
@@ -204,7 +213,7 @@ static void test_bn_mov0(void){
 	ASSERT_EQ64(test_dat64[2],0xFFFFFFFFFFFFFFFF);
 	bn_mov0(test_dat);
 	ASSERT_EQ64(test_dat64[0],0xFFFFFFFFFFFFFFFF);
-	ASSERT_EQ64(test_dat64[1],0x0000000000000000);
+	ASSERT_EQ64(test_dat64[1],0x0000000000000000UL);
 	ASSERT_EQ64(test_dat64[2],0xFFFFFFFFFFFFFFFF);
 	printf("test_bn_mov0 pass\n");
 }
@@ -218,9 +227,9 @@ static void test_bn_movc(void){
 	ASSERT_EQ64(test_dat64[2],0xFFFFFFFFFFFFFFFF);
 	bn_movc(test_dat,0xAA);
 	ASSERT_EQ64(test_dat64[0],0xFFFFFFFFFFFFFFFF);
-	ASSERT_EQ64(test_dat64[1],0x00000000000000AA);
+	ASSERT_EQ64(test_dat64[1],0x00000000000000AAUL);
 	ASSERT_EQ64(test_dat64[2],0xFFFFFFFFFFFFFFFF);
-	printf("test_bn_movc pass\n");	
+	printf("test_bn_movc pass\n");
 }
 
 static void test_bn_copy(void){
@@ -236,7 +245,7 @@ static void test_bn_copy(void){
 	ASSERT_EQ64(test_dat64[0],0xFFFFFFFFFFFFFFFF);
 	ASSERT_EQ64(test_dat64[1],0xa4093822299f31d0);
 	ASSERT_EQ64(test_dat64[2],0xFFFFFFFFFFFFFFFF);
-	printf("test_bn_copy pass\n");	
+	printf("test_bn_copy pass\n");
 }
 
 static void bn_shl1_ref64(uint64_t *x){
@@ -245,7 +254,7 @@ static void bn_shl1_ref64(uint64_t *x){
 
 static void test_bn_shl1(void){
 	uint64_t tv[] = {
-		0x0000000000000000,
+		0x0000000000000000UL,
 		0x13198a2e03707344,
 		0xa4093822299f31d0,
 		0x082efa98ec4e6c89,
@@ -277,19 +286,19 @@ static void bn_add_ref64(uint64_t *dest, uint64_t *src){
 
 static void test_bn_add(void){
 	uint64_t tv[][2] = {
-		{0x0000000000000000,0x0000000000000000},
-		{0x18319a2e03707344,0x07313198a3742e04},
-		{0xa3409822299f31d0,0xf31a4093899d2220},
-		{0x0f82ea98ec4e6c89,0xe6c082efac4898e9},
-		{0x425281e638d01377,0x0134528218d7e637},
-		{0xb6e546cf34e90c6c,0x90cbe54664e6cf3c},
-		{0x74ef8f78fd955cb1,0x55c7ef84fd9b78f1},
-		{0x80584851f1ac43aa,0xc438584081aa51fa},
-		{0xcd88232f25323c54,0x23cc882d35352f24},
-		{0x614a5195e0e3610d,0x36164a5110e095ed},
-		{0xda3b5399ca0c2399,0xc23d3b5a3a0999c9},
-		{0xc20ac9b7c97c50dd,0xc50c0ac2997db7cd},
-		{0xffffffffffffffff,0xffffffffffffffff},
+		{0x0000000000000000UL,0x0000000000000000UL},
+		{0x18319a2e03707344UL,0x07313198a3742e04UL},
+		{0xa3409822299f31d0UL,0xf31a4093899d2220UL},
+		{0x0f82ea98ec4e6c89UL,0xe6c082efac4898e9UL},
+		{0x425281e638d01377UL,0x0134528218d7e637UL},
+		{0xb6e546cf34e90c6cUL,0x90cbe54664e6cf3cUL},
+		{0x74ef8f78fd955cb1UL,0x55c7ef84fd9b78f1UL},
+		{0x80584851f1ac43aaUL,0xc438584081aa51faUL},
+		{0xcd88232f25323c54UL,0x23cc882d35352f24UL},
+		{0x614a5195e0e3610dUL,0x36164a5110e095edUL},
+		{0xda3b5399ca0c2399UL,0xc23d3b5a3a0999c9UL},
+		{0xc20ac9b7c97c50ddUL,0xc50c0ac2997db7cdUL},
+		{0xffffffffffffffffUL,0xffffffffffffffffUL},
 	};
 	for(int i=0;i<NUM(tv);i++){
 		uint64_t a64[3];
@@ -316,19 +325,19 @@ static void bn_sub_ref64(uint64_t *dest, uint64_t *src){
 
 static void test_bn_sub(void){
 	uint64_t tv[][2] = {
-		{0x0000000000000000,0x0000000000000000},
-		{0x18319a2e03707344,0x07313198a3742e04},
-		{0xa3409822299f31d0,0xf31a4093899d2220},
-		{0x0f82ea98ec4e6c89,0xe6c082efac4898e9},
-		{0x425281e638d01377,0x0134528218d7e637},
-		{0xb6e546cf34e90c6c,0x90cbe54664e6cf3c},
-		{0x74ef8f78fd955cb1,0x55c7ef84fd9b78f1},
-		{0x80584851f1ac43aa,0xc438584081aa51fa},
-		{0xcd88232f25323c54,0x23cc882d35352f24},
-		{0x614a5195e0e3610d,0x36164a5110e095ed},
-		{0xda3b5399ca0c2399,0xc23d3b5a3a0999c9},
-		{0xc20ac9b7c97c50dd,0xc50c0ac2997db7cd},
-		{0xffffffffffffffff,0xffffffffffffffff},
+		{0x0000000000000000UL,0x0000000000000000UL},
+		{0x18319a2e03707344UL,0x07313198a3742e04UL},
+		{0xa3409822299f31d0UL,0xf31a4093899d2220UL},
+		{0x0f82ea98ec4e6c89UL,0xe6c082efac4898e9UL},
+		{0x425281e638d01377UL,0x0134528218d7e637UL},
+		{0xb6e546cf34e90c6cUL,0x90cbe54664e6cf3cUL},
+		{0x74ef8f78fd955cb1UL,0x55c7ef84fd9b78f1UL},
+		{0x80584851f1ac43aaUL,0xc438584081aa51faUL},
+		{0xcd88232f25323c54UL,0x23cc882d35352f24UL},
+		{0x614a5195e0e3610dUL,0x36164a5110e095edUL},
+		{0xda3b5399ca0c2399UL,0xc23d3b5a3a0999c9UL},
+		{0xc20ac9b7c97c50ddUL,0xc50c0ac2997db7cdUL},
+		{0xffffffffffffffffUL,0xffffffffffffffffUL},
 	};
 	for(int i=0;i<NUM(tv);i++){
 		uint64_t a64[3];
@@ -350,25 +359,25 @@ static void test_bn_sub(void){
 }
 
 static int bn_cmp_ref64(uint64_t *a, uint64_t *b){
-	return *a==*b ? 0 : 
+	return *a==*b ? 0 :
 			*a>*b ? 1 : -1;
 }
 
 static void test_bn_cmp(void){
 	uint64_t tv[][2] = {
-		{0x0000000000000000,0x0000000000000000},
-		{0x18319a2e03707344,0x07313198a3742e04},
-		{0xa3409822299f31d0,0xf31a4093899d2220},
-		{0x0f82ea98ec4e6c89,0xe6c082efac4898e9},
-		{0x425281e638d01377,0x0134528218d7e637},
-		{0xb6e546cf34e90c6c,0x90cbe54664e6cf3c},
-		{0x74ef8f78fd955cb1,0x55c7ef84fd9b78f1},
-		{0x80584851f1ac43aa,0xc438584081aa51fa},
-		{0xcd88232f25323c54,0x23cc882d35352f24},
-		{0x614a5195e0e3610d,0x36164a5110e095ed},
-		{0xda3b5399ca0c2399,0xc23d3b5a3a0999c9},
-		{0xc20ac9b7c97c50dd,0xc50c0ac2997db7cd},
-		{0xffffffffffffffff,0xffffffffffffffff},
+		{0x0000000000000000UL,0x0000000000000000UL},
+		{0x18319a2e03707344UL,0x07313198a3742e04UL},
+		{0xa3409822299f31d0UL,0xf31a4093899d2220UL},
+		{0x0f82ea98ec4e6c89UL,0xe6c082efac4898e9UL},
+		{0x425281e638d01377UL,0x0134528218d7e637UL},
+		{0xb6e546cf34e90c6cUL,0x90cbe54664e6cf3cUL},
+		{0x74ef8f78fd955cb1UL,0x55c7ef84fd9b78f1UL},
+		{0x80584851f1ac43aaUL,0xc438584081aa51faUL},
+		{0xcd88232f25323c54UL,0x23cc882d35352f24UL},
+		{0x614a5195e0e3610dUL,0x36164a5110e095edUL},
+		{0xda3b5399ca0c2399UL,0xc23d3b5a3a0999c9UL},
+		{0xc20ac9b7c97c50ddUL,0xc50c0ac2997db7cdUL},
+		{0xffffffffffffffffUL,0xffffffffffffffffUL},
 	};
 	for(int i=0;i<NUM(tv);i++){
 		uint64_t a64[3];
@@ -385,7 +394,7 @@ static void test_bn_cmp(void){
 		ASSERT_EQ64(a64[1],tv[i][0]);
 		ASSERT_EQ64(b64[0],0xD6DCB5978DE756ED);ASSERT_EQ64(b64[2],0x892F599F46761CD3);
 		ASSERT_EQ64(b64[1],tv[i][1]);
-		ASSERT_EQ64(res,res_ref);
+		ASSERT_EQ(res,res_ref);
 	}
 	printf("test_bn_cmp pass\n");
 }
@@ -403,7 +412,7 @@ static void test_bn_msb(void){
 		const int res = bn_msb(a);
 		ASSERT_EQ64(a64[0],0xD6DCB5978DE756ED);ASSERT_EQ64(a64[2],0x892F599F46761CD3);
 		ASSERT_EQ64(a64[1],tv);
-		ASSERT_EQ64(res,i);
+		ASSERT_EQ(res,i);
 	}
 	printf("test_bn_msb pass\n");
 }
@@ -414,19 +423,19 @@ static void bn_mul_ref64(uint64_t *r, uint64_t x, uint64_t y){
 
 static void test_bn_mul(void){
 	uint64_t tv[][2] = {
-		{0x0000000000000000,0x0000000000000000},
-		{0x18319a2e03707344,0x07313198a3742e04},
-		{0xa3409822299f31d0,0xf31a4093899d2220},
-		{0x0f82ea98ec4e6c89,0xe6c082efac4898e9},
-		{0x425281e638d01377,0x0134528218d7e637},
-		{0xb6e546cf34e90c6c,0x90cbe54664e6cf3c},
-		{0x74ef8f78fd955cb1,0x55c7ef84fd9b78f1},
-		{0x80584851f1ac43aa,0xc438584081aa51fa},
-		{0xcd88232f25323c54,0x23cc882d35352f24},
-		{0x614a5195e0e3610d,0x36164a5110e095ed},
-		{0xda3b5399ca0c2399,0xc23d3b5a3a0999c9},
-		{0xc20ac9b7c97c50dd,0xc50c0ac2997db7cd},
-		{0xffffffffffffffff,0xffffffffffffffff},
+		{0x0000000000000000UL,0x0000000000000000UL},
+		{0x18319a2e03707344UL,0x07313198a3742e04UL},
+		{0xa3409822299f31d0UL,0xf31a4093899d2220UL},
+		{0x0f82ea98ec4e6c89UL,0xe6c082efac4898e9UL},
+		{0x425281e638d01377UL,0x0134528218d7e637UL},
+		{0xb6e546cf34e90c6cUL,0x90cbe54664e6cf3cUL},
+		{0x74ef8f78fd955cb1UL,0x55c7ef84fd9b78f1UL},
+		{0x80584851f1ac43aaUL,0xc438584081aa51faUL},
+		{0xcd88232f25323c54UL,0x23cc882d35352f24UL},
+		{0x614a5195e0e3610dUL,0x36164a5110e095edUL},
+		{0xda3b5399ca0c2399UL,0xc23d3b5a3a0999c9UL},
+		{0xc20ac9b7c97c50ddUL,0xc50c0ac2997db7cdUL},
+		{0xffffffffffffffffUL,0xffffffffffffffffUL},
 	};
 	for(int i=0;i<NUM(tv);i++){
 		uint64_t a64[3];
@@ -563,11 +572,11 @@ static void test_bn_modmul(void){
 		tv[i][0] >>= 1;
 		tv[i][1] >>= 1;
 		tv[i][2] >>= 1;
-		
+
 		//our implementation requires all input are modulo m
 		tv[i][0] = (tv[i][0])%(tv[i][2]);
 		tv[i][1] = (tv[i][1])%(tv[i][2]);
-		
+
 		a64[1] = tv[i][0];
 		b64[1] = tv[i][1];
 		c64[1] = tv[i][2];
@@ -582,17 +591,17 @@ static void test_bn_modmul(void){
 		ASSERT_EQ64(c64[1],tv[i][2]);
 		ASSERT_EQ64(d64[0],0xD6DCB5978DE756ED);ASSERT_EQ64(d64[2],0x892F599F46761CD3);
 		ASSERT_EQ64(d64[1],res_ref);
-		
-		
+
+
 		//the second reference function support only 32 bit numbers
 		tv[i][0] >>= 31;
 		tv[i][1] >>= 31;
 		tv[i][2] >>= 31;
-		
+
 		//our implementation requires all input are modulo m
 		tv[i][0] = (tv[i][0])%(tv[i][2]);
 		tv[i][1] = (tv[i][1])%(tv[i][2]);
-		
+
 		a64[1] = tv[i][0];
 		b64[1] = tv[i][1];
 		c64[1] = tv[i][2];
@@ -644,16 +653,16 @@ static void test_bn_div(void){
 		b64[0] = 0xD6DCB5978DE756ED;b64[2] = 0x892F599F46761CD3;
 		c64[0] = 0xD6DCB5978DE756ED;c64[2] = 0x892F599F46761CD3;
 		d64[0] = 0xD6DCB5978DE756ED;d64[2] = 0x892F599F46761CD3;
-		
+
 		a64[1] = tv[i][0];
 		b64[1] = tv[i][1];
 		uint64_t res_ref;
 		uint64_t m_ref;
-		
+
 		//the second reference function support only 32 bit numbers
 		tv[i][0] >>= 32;
 		tv[i][1] >>= 32;
-		
+
 		a64[1] = tv[i][0];
 		b64[1] = tv[i][1];
 		bn_div(d,c,a,b);
@@ -721,11 +730,11 @@ static void test_bn_modexp(void){
 		tv[i][0] >>= 1;
 		tv[i][1] >>= 1;
 		tv[i][2] >>= 1;
-		
+
 		//our implementation requires all input are modulo m
 		tv[i][0] = (tv[i][0])%(tv[i][2]);
 		tv[i][1] = (tv[i][1])%(tv[i][2]);
-		
+
 		a64[1] = tv[i][0];
 		b64[1] = tv[i][1];
 		c64[1] = tv[i][2];
@@ -752,15 +761,15 @@ static int min_bn_math_self_test(void){
 		return -1;
 	}
 	printf("\nConstants\n");
-	printf("BN_WORD_WIDTH     = ");DBG_PRINT32(BN_WORD_WIDTH);
-	printf("BN_BIT            = ");DBG_PRINT32(BN_BIT);
-	printf("BN_BYTES          = ");DBG_PRINT32(BN_BYTES);
-	printf("BN_WORDS          = ");DBG_PRINT32(BN_WORDS);
+	printf("BN_WORD_WIDTH     = ");DBG_PRINT64(BN_WORD_WIDTH);
+	printf("BN_BIT            = ");DBG_PRINT64(BN_BIT);
+	printf("BN_BYTES          = ");DBG_PRINT64(BN_BYTES);
+	printf("BN_WORDS          = ");DBG_PRINT64(BN_WORDS);
 	printf("BN_WORDS_MSB_MASK = ");DBG_PRINT32(BN_WORDS_MSB_MASK);
 	//All test rely on uint64_t arithmetic being computed right by the test environment
 	//Tests are meaningful only with BN_WORD_WIDTH = 8 (to really test the carry propagation and so on)
-	ASSERT_EQ64(BN_WORD_WIDTH,8);
-	ASSERT_EQ64(BN_BIT,64);
+	ASSERT_EQ64(BN_WORD_WIDTH,8UL);
+	ASSERT_EQ64(BN_BIT,64UL);
 	printf("\nLaunching unit tests\n");
 	test_bn_mov0();
 	test_bn_movc();
@@ -780,4 +789,3 @@ static int min_bn_math_self_test(void){
 }
 #endif // MIN_BN_MATH_TEST
 #endif // __MIN_BN_MATH_H__
-

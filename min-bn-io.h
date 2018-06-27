@@ -7,13 +7,13 @@ static void bn_dumphex(char* s, WORD x[]){
   printf("%s",s);
   for (int i=BN_WORDS-1; i>=0; i--){
     if(BN_WORD_WIDTH > 32){
-		printf("%016" PRIX64 ,x[i]);
+		printf("%016" PRIX64 ,(uint64_t)x[i]);
 	}else if(BN_WORD_WIDTH > 16){
-		printf("%08X",x[i]);
+		printf("%08X",(uint32_t)x[i]);
 	} else if(BN_WORD_WIDTH > 8){
-		printf("%04X",x[i]);
+		printf("%04X",(uint32_t)x[i]);
 	} else {
-		printf("%02X",x[i]);
+		printf("%02X",(uint32_t)x[i]);
 	}
   }
   printf("\n");

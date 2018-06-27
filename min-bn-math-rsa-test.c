@@ -132,11 +132,11 @@ WORD rsa_n[64] = {
 
 
 int main(void){
-	printf("\nsizeof(WORD)=%u\n\n",sizeof(WORD));
+	printf("\nsizeof(WORD)=%lu\n\n",sizeof(WORD));
 	WORD d[BN_WORDS];
 	WORD e[BN_WORDS];
 	WORD n[BN_WORDS];
-		
+
 	memset(d,0,sizeof(d));
 	memset(e,0,sizeof(e));
 	memset(n,0,sizeof(n));
@@ -163,6 +163,16 @@ int main(void){
 
 	bn_dumpdec("y=",y);
 
+    //ref value computed using Python
+    WORD expected_y[BN_WORDS];
+    bn_mov0(expected_y);
+    bn_movdec(expected_y,"79837308394276082832394099451962646557483853653027472358011015333284633012246912623845904086398177260311904569437181421386349546778813042583078163460695958969718198429293438416380710780491695216741741413468987522171899038568777375760893736736604396826856704709437643616981249394518637405444655334823570539370");
+
+    if(bn_cmp(y,expected_y)){
+        printf("\nERROR: incorrect encryption\n\n");
+        exit(-1);
+    }
+
 	bn_modexp(z, y,d,n);
 
 	bn_dumpdec("z=",z);
@@ -174,4 +184,3 @@ int main(void){
 	printf("\nrsa_test pass\n");
 	return 0;
 }
-
