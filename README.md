@@ -1,5 +1,7 @@
+[![Build Status](https://travis-ci.org/sebastien-riou/min-bn-math.svg?branch=master)](https://travis-ci.org/sebastien-riou/min-bn-math)
 # min-bn-math
 Minimalist big number math C library / RSA encryption demo.
+
 Acknowledgement: This is based on some code found on a random website, apparently written by "z0mbie@i.am".
 
 Test on windows/x86-64:
